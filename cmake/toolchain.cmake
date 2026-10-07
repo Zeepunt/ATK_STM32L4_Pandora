@@ -30,6 +30,7 @@ if(TOOLCHAIN STREQUAL "gcc")
     set(CMAKE_C_COMPILER   "${toolchain_prefix}gcc")
     set(CMAKE_CXX_COMPILER "${toolchain_prefix}g++")
     set(CMAKE_ASM_COMPILER "${toolchain_prefix}gcc")
+    set(CMAKE_SIZE         "${toolchain_prefix}size")
 
     set(cc_flags
         ${ARCH_FLAGS}
@@ -51,6 +52,7 @@ elseif(TOOLCHAIN STREQUAL "armclang")
     set(CMAKE_CXX_COMPILER "${toolchain_prefix}armclang++")
     set(CMAKE_ASM_COMPILER "${toolchain_prefix}armclang")
     set(CMAKE_OBJCOPY      "${toolchain_prefix}fromelf")
+    set(CMAKE_SIZE         "${toolchain_prefix}fromelf")
 
     set(cc_flags
         "--target=arm-arm-none-eabi"
