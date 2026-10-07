@@ -99,6 +99,7 @@ void __wrap__free_r(struct _reent *reent, void *ptr)
 }
 
 /* stdout */
+#ifndef COMPONENT_SEGGER_RTT_ENABLED
 int _write(int file, char *ptr, int len)
 {
     (void)file;
@@ -109,6 +110,7 @@ int _write(int file, char *ptr, int len)
 
     return len;
 }
+#endif
 
 /* file */
 int _close(int fd)

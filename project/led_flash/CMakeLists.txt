@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.22)
 project(led_flash C ASM)
 
 set(FREERTOS_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
+set(RTT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
 
 add_subdirectory(
     "${CMAKE_CURRENT_SOURCE_DIR}/../.."
@@ -24,6 +25,11 @@ add_executable(${PROJECT_NAME}
     "main.c"
 )
 
+# 统一输出后缀为 .elf
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    SUFFIX ".elf"
+)
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/config"
@@ -35,6 +41,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     "cmsis-device-l4"
     "stm32l4xx-hal-driver"
     "FreeRTOS"
+    "RTT"
 )
 
 # 链接脚本处理
