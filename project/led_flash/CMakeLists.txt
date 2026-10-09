@@ -8,6 +8,7 @@ cmake_minimum_required(VERSION 3.22)
 
 project(led_flash C ASM)
 
+set(STM32_HAL_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
 set(FREERTOS_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
 set(RTT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
 
@@ -19,6 +20,7 @@ add_subdirectory(
 # 编译目标
 add_executable(${PROJECT_NAME}
     "startup.c"
+    "stm32l4xx_hal_msp.c"
     "retarget_syscall.c"
     "FreeRTOSHeap.c"
     "bsp/source/bsp_uart.c"

@@ -32,13 +32,19 @@ set(stm32l4xx_hal_driver_srcs
 component_register(
     SRCS
         ${stm32l4xx_hal_driver_srcs}
-        "${CMAKE_CURRENT_SOURCE_DIR}/stm32l4xx_hal_msp.c"
     INCLUDE_DIRS
         ${stm32l4xx_hal_driver_incs}
     REQUIRES
         "CMSIS"
         "cmsis-device-l4"
 )
+
+if(STM32_HAL_CONFIG_DIR)
+    target_include_directories(${COMPONENT_LIB}
+        PUBLIC
+            ${STM32_HAL_CONFIG_DIR}
+    )
+endif()
 
 target_compile_definitions(${COMPONENT_LIB}
     PUBLIC
