@@ -123,6 +123,5 @@ header file. */
 
 #define vPortSVCHandler        SVC_Handler
 #define xPortPendSVHandler     PendSV_Handler
-#define xPortSysTickHandler    SysTick_Handler
 
 #endif /* __FREERTOS_CONFIG_H__ */

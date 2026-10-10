@@ -21,6 +21,7 @@ add_subdirectory(
 add_executable(${PROJECT_NAME}
     "startup.c"
     "stm32l4xx_hal_msp.c"
+    "exception.c"
     "retarget_syscall.c"
     "FreeRTOSHeap.c"
     "bsp/source/bsp_uart.c"
