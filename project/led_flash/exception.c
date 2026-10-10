@@ -14,6 +14,14 @@
 
 void SysTick_Handler(void)
 {
+    /**
+     * 需要确保 configTICK_RATE_HZ 和 HAL_TICK_FREQ_DEFAULT 一致
+     *
+     * 当前的配置如下:
+     * 1. configTICK_RATE_HZ = 1000
+     * 2. HAL_TICK_FREQ_DEFAULT = HAL_TICK_FREQ_1KHZ
+     */
+
     HAL_IncTick();
 
     if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
