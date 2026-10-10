@@ -27,6 +27,8 @@ set(stm32l4xx_hal_driver_srcs
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32l4xx_hal_uart_ex.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32l4xx_hal_usart.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32l4xx_hal_usart_ex.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32l4xx_hal_i2c.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32l4xx_hal_i2c_ex.c"
 )
 
 component_register(
