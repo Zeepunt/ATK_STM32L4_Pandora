@@ -25,12 +25,14 @@ Register a component as an OBJECT library and export COMPONENT_LIB.
 
     PRIV_INCLUDE_DIRS[in,opt] : List of private include directories for the newly created component library.
 
+    LIBS[in,opt] : List of external libraries
+
     REQUIRES[in,opt] : List of publicly required components based on usage requirements.
 #]]
 function(component_register)
     set(options "")
     set(one_value "")
-    set(multi_value SRCS INCLUDE_DIRS PRIV_INCLUDE_DIRS REQUIRES)
+    set(multi_value SRCS INCLUDE_DIRS PRIV_INCLUDE_DIRS LIBS REQUIRES)
 
     cmake_parse_arguments(ARGS
         "${options}"
@@ -57,6 +59,13 @@ function(component_register)
             PRIVATE
                 ${ARGS_PRIV_INCLUDE_DIRS}
         )
+
+        if(ARGS_LIBS)
+            target_link_libraries(${COMPONENT_NAME}
+                INTERFACE
+                    ${ARGS_LIBS}
+            )
+        endif()
     else()
         # 无源文件时创建接口库
         add_library(${COMPONENT_NAME} INTERFACE)
@@ -66,6 +75,13 @@ function(component_register)
             INTERFACE
                 ${ARGS_INCLUDE_DIRS}
         )
+
+        if(ARGS_LIBS)
+            target_link_libraries(${COMPONENT_NAME}
+                INTERFACE
+                    ${ARGS_LIBS}
+            )
+        endif()
     endif()
 
     if(ARGS_REQUIRES)
