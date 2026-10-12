@@ -16,23 +16,8 @@ add_subdirectory(
     "${CMAKE_CURRENT_SOURCE_DIR}/../.."
     "${CMAKE_BINARY_DIR}/sdk"
 )
-
-set(bsp_incs
-    "${CMAKE_CURRENT_SOURCE_DIR}/bsp/include"
-)
-
-set(bsp_srcs
-    "bsp/source/bsp_uart.c"
-    "bsp/source/bsp_i2c.c"
-)
-
-set(driver_incs
-    "${CMAKE_CURRENT_SOURCE_DIR}/driver/include"
-)
-
-set(driver_srcs
-    "driver/source/drv_icm20608.c"
-)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/bsp")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/driver")
 
 # 编译目标
 add_executable(${PROJECT_NAME}
@@ -41,8 +26,6 @@ add_executable(${PROJECT_NAME}
     "exception.c"
     "retarget_syscall.c"
     "FreeRTOSHeap.c"
-    ${bsp_srcs}
-    ${driver_srcs}
     "main.c"
 )
 
@@ -54,8 +37,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/config"
-    ${bsp_incs}
-    ${driver_incs}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -64,6 +45,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     "stm32l4xx-hal-driver"
     "FreeRTOS"
     "RTT"
+    "bsp"
+    "driver"
 )
 
 # 链接脚本处理
