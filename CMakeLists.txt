@@ -10,5 +10,7 @@ cmake_minimum_required(VERSION 3.22)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # 加载 component.cmake
 include(component)
+# 加载 kconfig.cmake
+include(kconfig)
 
 add_subdirectory(sdk)

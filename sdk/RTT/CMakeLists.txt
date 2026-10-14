@@ -24,16 +24,11 @@ elseif(TOOLCHAIN STREQUAL "armclang")
     )
 endif()
 
-component_register(1
+component_register(
     SRCS
         ${rtt_srcs}
     INCLUDE_DIRS
         ${rtt_incs}
-)
-
-target_compile_definitions(${COMPONENT_LIB}
-    PUBLIC
-        COMPONENT_SEGGER_RTT_ENABLED
 )
 
 if(RTT_CONFIG_DIR)

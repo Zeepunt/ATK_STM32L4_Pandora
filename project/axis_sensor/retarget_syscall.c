@@ -7,6 +7,8 @@
 #include <stddef.h> 
 #include <stdio.h>
 
+#include "autoconf.h"
+
 #include "FreeRTOS.h"
 #include "semphr.h"
 
@@ -99,7 +101,7 @@ void __wrap__free_r(struct _reent *reent, void *ptr)
 }
 
 /* stdout */
-#ifndef COMPONENT_SEGGER_RTT_ENABLED
+#ifndef CONFIG_SDK_SEGGER_RTT
 int _write(int file, char *ptr, int len)
 {
     (void)file;

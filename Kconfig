@@ -1,0 +1,3 @@
+mainmenu "ATK STM32L4 Pandora Configuration"
+
+rsource "sdk/Kconfig"

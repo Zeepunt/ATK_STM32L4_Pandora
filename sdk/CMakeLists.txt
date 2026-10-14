@@ -4,8 +4,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2026 Zeepunt
 
-add_subdirectory(CMSIS)
-add_subdirectory(cmsis-device-l4)
-add_subdirectory(stm32l4xx-hal-driver)
-add_subdirectory(FreeRTOS)
-add_subdirectory(RTT)
+if(CONFIG_SDK_CMSIS)
+    add_subdirectory(CMSIS)
+endif()
+
+if(CONFIG_SDK_CMSIS_DEVICE)
+    add_subdirectory(cmsis-device-l4)
+endif()
+
+if(CONFIG_SDK_STM32L4XX_HAL_DRIVER)
+    add_subdirectory(stm32l4xx-hal-driver)
+endif()
+
+if(CONFIG_SDK_FREERTOS)
+    add_subdirectory(FreeRTOS)
+endif()
+
+if(CONFIG_SDK_SEGGER_RTT)
+    add_subdirectory(RTT)
+endif()

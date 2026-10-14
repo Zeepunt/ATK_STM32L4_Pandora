@@ -1,0 +1,28 @@
+menu "SDK Configuration"
+
+    config SDK_CMSIS
+        bool "CMSIS"
+        default y
+        help
+            Common Microcontroller Software Interface Standard
+
+    config SDK_CMSIS_DEVICE
+        bool "CMSIS Device Part"
+        depends on SDK_CMSIS
+        default y
+
+    config SDK_STM32L4XX_HAL_DRIVER
+        bool "STM32L4xx Series HAL Driver"
+        depends on SDK_CMSIS_DEVICE
+        default y
+
+    config SDK_FREERTOS
+        bool "FreeRTOS Kernel"
+        depends on SDK_CMSIS
+        default y
+
+    config SDK_SEGGER_RTT
+        bool "Segger RTT Logger"
+        default y
+
+endmenu

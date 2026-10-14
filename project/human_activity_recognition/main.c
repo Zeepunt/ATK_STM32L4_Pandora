@@ -7,12 +7,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "autoconf.h"
+
 #include "stm32l4xx.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 
+#ifdef CONFIG_SDK_SEGGER_RTT
 #include "SEGGER_RTT.h"
+#endif
 
 #include "drv_icm20608.h"
 
@@ -92,7 +96,9 @@ int main(int argc, char *argv[])
 
     HAL_Init();
 
+#ifdef CONFIG_SDK_SEGGER_RTT
     SEGGER_RTT_Init();
+#endif
 
     SystemClock_Config();
     SystemCoreClockUpdate();

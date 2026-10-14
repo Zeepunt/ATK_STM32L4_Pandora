@@ -7,13 +7,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "autoconf.h"
+
 #include "stm32l4xx.h"
 #include "bsp_uart.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 
+#ifdef CONFIG_SDK_SEGGER_RTT
 #include "SEGGER_RTT.h"
+#endif
 
 #define LOG(fmt, ...)    printf(fmt "\r\n", ##__VA_ARGS__)
 
@@ -139,7 +143,9 @@ int main(int argc, char *argv[])
 
     HAL_Init();
 
+#ifdef CONFIG_SDK_SEGGER_RTT
     SEGGER_RTT_Init();
+#endif
 
     SystemClock_Config();
     SystemCoreClockUpdate();

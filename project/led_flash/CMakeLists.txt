@@ -16,6 +16,7 @@ add_subdirectory(
     "${CMAKE_CURRENT_SOURCE_DIR}/../.."
     "${CMAKE_BINARY_DIR}/sdk"
 )
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/bsp")
 
 # 编译目标
 add_executable(${PROJECT_NAME}
@@ -24,7 +25,6 @@ add_executable(${PROJECT_NAME}
     "exception.c"
     "retarget_syscall.c"
     "FreeRTOSHeap.c"
-    "bsp/source/bsp_uart.c"
     "main.c"
 )
 
@@ -34,9 +34,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+    "${KCONFIG_INCLUDE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/config"
-    "${CMAKE_CURRENT_SOURCE_DIR}/bsp/include"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -44,8 +44,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     "cmsis-device-l4"
     "stm32l4xx-hal-driver"
     "FreeRTOS"
-    "RTT"
+    # other
+    "bsp"
 )
+
+if(CONFIG_SDK_SEGGER_RTT)
+    target_link_libraries(${PROJECT_NAME} PRIVATE "RTT")
+endif()
 
 # 链接脚本处理
 if(TOOLCHAIN STREQUAL "gcc")

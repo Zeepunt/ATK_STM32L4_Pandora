@@ -1,9 +1,34 @@
 # 环境
 
 - 开发板：ATK-STM32L4-Pandora v2.61
+
 - 芯片：STM32L475VETx
 
+- 编译器
+
+  - arm-none-eabi-gcc（[Arm GNU Toolchain 15.3.Rel1](https://gitlab.arm.com/tooling/gnu-toolchains-for-arm/-/tree/releases/15.3.rel1)）
+  - armclang（Arm Compiler for Embedded 6.19）
+
+- CMake：[4.3.3](https://cmake.org/files/v4.3/)
+
+- Python：[3.12.13](https://www.python.org/downloads/release/python-31213/)
+
+- kconfiglib
+
+  ```shell
+  $ pip install kconfiglib
+  ```
+
+  当前安装的版本是 14.1.0（[Github 仓库](https://github.com/ulfalizer/Kconfiglib)）
+
 # 使用
+
+## 配置
+
+```shell
+$ cd project/led_flash
+$ menuconfig
+```
 
 ## 编译
 
