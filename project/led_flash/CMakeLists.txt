@@ -6,6 +6,10 @@
 
 cmake_minimum_required(VERSION 3.22)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
+
 project(led_flash C ASM)
 
 set(STM32_HAL_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")

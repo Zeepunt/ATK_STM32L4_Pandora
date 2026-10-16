@@ -56,6 +56,7 @@ $ cmake --build build
 注意：
 
 1. 如果工具链路径已经加载到系统的 `PATH` 里面，则不需要添加 `TOOLCHAIN_BIN_DIR`。
+1. 默认是 Debug 模式，如果要更改为 Release 模式，可以加上 `-DCMAKE_BUILD_TYPE=Release`。
 
 ## 打印信息
 
@@ -140,4 +141,142 @@ $ probe-rs run --chip STM32L475VETx --rtt-up-channels 0 ./build/led_flash.elf
 # 调试
 
 ## VSCode
+
+### probe-rs
+
+1. 在 VSCode 插件市场下载 `Debugger for probe-rs` 插件。
+
+   [Github 仓库](https://github.com/probe-rs/vscode)
+
+2. 使用 VSCode 打开具体某个项目目录，比如 `project/led_flash`。
+
+   注意：不是打开 `ATK_STM32L4_Pandora` 这个目录。
+
+3. 新建一个调试文件 `launch.json`。
+
+   ![image-20261016192507468](./assets/image-20261016192507468.png)
+
+   该文件的路径是 `project/led_flash/.vscode/launch.json`。
+
+   简单的配置内容如下（详细的配置选项可以参考 [配置文档](https://probe.rs/docs/tools/debugger/)）：
+
+   ```json
+       "configurations": [
+           {
+               // 调试会话名称
+               "name": "STM32L475VE Debug",
+   
+               // 调试器类型
+               "type": "probe-rs-debug",
+   
+               // 请求类型
+               // launch 表示启动新会话并烧录固件
+               // attach 表示附加到已在运行的目标
+               "request": "launch",
+   
+               // 芯片型号
+               "chip": "STM32L475VETx",
+   
+               // 当前工作目录
+               "cwd": "${workspaceFolder}",
+   
+               // 连接时保持复位状态, 确保在芯片复位后立即接管
+               "connectUnderReset": false,
+   
+               // 烧录配置
+               "flashingConfig": {
+                   // 是否在调试前自动烧录固件
+                   "flashingEnabled": true,
+                   // 烧录前校验: 对比 Flash 内容与待烧录文件, 不一致才执行烧录
+                   "verifyBeforeFlashing": true,
+                   // 烧录后校验: 烧录完成后读回数据, 确认写入正确
+                   "verifyAfterFlashing": true,
+                   // 烧录完成后是否暂停 CPU (Reset_Handler)
+                   "haltAfterReset": false
+               },
+   
+               // 核心配置
+               "coreConfigs": [
+                   {
+                       "coreIndex": 0,
+                       // 程序文件路径
+                       "programBinary": "${workspaceFolder}/build/led_flash.elf",
+   
+                       // 启用 RTT
+                       "rttEnabled": true,
+                       // 定义每个 RTT 通道的数据格式
+                       "rttChannelFormats": [
+                           {
+                               // RTT 上行通道编号
+                               "channelNumber": 0,
+                               // 数据格式
+                               // String 表示发送完整的文本
+                               // Defmt 发送二进制编码的索引
+                               "dataFormat": "String",
+                               // 在每行 RTT 输出前加上主机端时间戳
+                               "showTimestamps": true
+                           }
+                       ]
+                   }
+               ]
+           }
+       ]
+   ```
+   
+4. 编译生成 .elf 文件后，就可以进行调试了。
+
+   ![image-20261016233655573](./assets/image-20261016233655573.png)
+
+
+
+当前每次修改代码后，都需要手动编译一次才能进行调试，比较麻烦。
+
+这时候我们可以添加一个任务，用于在调试前自动编译一次。
+
+> 注意：还是需要手动进行 cmake 配置的。
+
+1. 新建一个任务文件 `task.json`。
+
+   该文件的路径是 `project/led_flash/.vscode/task.json`。
+
+   简单的配置内容如下：
+
+   ```json
+       "tasks": [
+           {
+               // 任务标签, 需要与 launch.json 中的 preLaunchTask 值一致
+               "label": "STM32L475VE Build",
+   
+               // 通过系统 shell 执行命令
+               "type": "shell",
+   
+               // 命令: cmake --build build
+               "command": "cmake",
+               "args": [
+                   "--build",
+                   "build"
+               ],
+   
+               "options": {
+                   // 任务执行的工作目录
+                   "cwd": "${workspaceFolder}"
+               }
+           }
+       ]
+   ```
+
+2. 在 `launch.json` 里添加该任务名称。
+
+   ```json
+       "configurations": [
+           {
+               ...
+   
+               // 调试前先执行 tasks.json 里 label 为 "STM32L475VE Build" 的任务
+               "preLaunchTask": "STM32L475VE Build"
+           }
+       ]
+   ```
+
+   
 

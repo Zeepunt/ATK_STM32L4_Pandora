@@ -13,12 +13,7 @@ set(TOOLCHAIN_BIN_DIR "" CACHE PATH "Compiler bin directoy")
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-set(ARCH_FLAGS
-    "-mcpu=cortex-m4"
-    "-mthumb"
-    "-mfpu=fpv4-sp-d16"
-    "-mfloat-abi=hard"
-)
+set(ARCH_FLAGS "-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 
 if(TOOLCHAIN STREQUAL "gcc")
     if(TOOLCHAIN_BIN_DIR)
@@ -32,15 +27,21 @@ if(TOOLCHAIN STREQUAL "gcc")
     set(CMAKE_ASM_COMPILER "${toolchain_prefix}gcc")
     set(CMAKE_SIZE         "${toolchain_prefix}size")
 
-    set(cc_flags
-        ${ARCH_FLAGS}
-        "-fdata-sections"
-        "-ffunction-sections"
-    )
+    # 公共编译标志
+    set(CMAKE_C_FLAGS_INIT "${ARCH_FLAGS} -fdata-sections -ffunction-sections")
+    set(CMAKE_ASM_FLAGS_INIT "${ARCH_FLAGS} -x assembler-with-cpp -Wa,-mimplicit-it=thumb")
 
-    set(link_flags
-        ${ARCH_FLAGS}
-    )
+    # 按构建类型区分的编译标志
+    # Debug
+    set(CMAKE_C_FLAGS_DEBUG_INIT "-O0 -g3 -gdwarf-4")
+    set(CMAKE_ASM_FLAGS_DEBUG_INIT "-O0 -g3 -gdwarf-4")
+    # Release
+    set(CMAKE_C_FLAGS_RELEASE_INIT "-O2 -g0")
+    set(CMAKE_ASM_FLAGS_RELEASE_INIT "-O2 -g0")
+
+    # 链接标志
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG_INIT "-Wl,-O0")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT "-Wl,-O2")
 elseif(TOOLCHAIN STREQUAL "armclang")
     if(TOOLCHAIN_BIN_DIR)
         set(toolchain_prefix "${TOOLCHAIN_BIN_DIR}/")
@@ -54,26 +55,23 @@ elseif(TOOLCHAIN STREQUAL "armclang")
     set(CMAKE_OBJCOPY      "${toolchain_prefix}fromelf")
     set(CMAKE_SIZE         "${toolchain_prefix}fromelf")
 
-    set(cc_flags
-        "--target=arm-arm-none-eabi"
-        ${ARCH_FLAGS}
-        "-fdata-sections"
-        "-ffunction-sections"
-        "-funsigned-char"
-        "-fshort-enums"
-        "-fshort-wchar"
-        "-fno-rtti"
-    )
+    # 公共编译标志
+    set(CMAKE_C_FLAGS_INIT "--target=arm-arm-none-eabi ${ARCH_FLAGS} -fdata-sections -ffunction-sections -funsigned-char -fshort-enums -fshort-wchar -fno-rtti")
+    set(CMAKE_ASM_FLAGS_INIT "--target=arm-arm-none-eabi ${ARCH_FLAGS}")
 
-    set(link_flags
-        "--cpu=Cortex-M4.fp"
-    )
+    # 按构建类型区分的编译标志
+    # Debug
+    set(CMAKE_C_FLAGS_DEBUG_INIT "-g -O1")
+    set(CMAKE_ASM_FLAGS_DEBUG_INIT "-g")
+    # Release
+    set(CMAKE_C_FLAGS_RELEASE_INIT "-O2")
+    set(CMAKE_ASM_FLAGS_RELEASE_INIT "-O2")
+
+    # 链接标志
+    set(CMAKE_EXE_LINKER_FLAGS_INIT "--cpu=Cortex-M4.fp")
 else()
     message(FATAL_ERROR "Unknown TOOLCHAIN='${TOOLCHAIN}'. Supported: gcc, armclang")
 endif()
-
-add_compile_options(${cc_flags})
-add_link_options(${link_flags})
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
