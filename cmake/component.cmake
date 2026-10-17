@@ -55,6 +55,7 @@ function(component_register)
 
         target_include_directories(${COMPONENT_NAME}
             PUBLIC
+                ${KCONFIG_INCLUDE_DIR}
                 ${ARGS_INCLUDE_DIRS}
             PRIVATE
                 ${ARGS_PRIV_INCLUDE_DIRS}
@@ -73,6 +74,7 @@ function(component_register)
         # 接口库只支持 PRIVATE
         target_include_directories(${COMPONENT_NAME}
             INTERFACE
+                ${KCONFIG_INCLUDE_DIR}
                 ${ARGS_INCLUDE_DIRS}
         )
 
