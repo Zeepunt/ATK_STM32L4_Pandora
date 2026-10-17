@@ -451,8 +451,8 @@ WISDM 数据集的采样率是 20 Hz，mobility_v1 数据集的采样率是 26 H
   
       /* 采样 24 个点 */
       for (int i = 0; i < WINDOWS_LENGTH; i++) {
-          extern int drv_icm20608_accelerometer_get(int16_t *x, int16_t *y, int16_t *z);
-          drv_icm20608_accelerometer_get(&ax, &ay, &az);
+          extern int dev_icm20608_accelerometer_get(int16_t *x, int16_t *y, int16_t *z);
+          dev_icm20608_accelerometer_get(&ax, &ay, &az);
   
           /* 加速度计 FSR = ±2g -> 16384 LSB/g */
           window[i][0] = (float)ax / 16384.0f;

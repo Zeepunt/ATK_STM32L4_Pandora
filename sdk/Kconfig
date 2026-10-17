@@ -16,6 +16,11 @@ menu "SDK Configuration"
         depends on SDK_CMSIS_DEVICE
         default y
 
+    config SDK_BOARD
+        bool "Board"
+        depends on SDK_STM32L4XX_HAL_DRIVER
+        default y
+
     config SDK_FREERTOS
         bool "FreeRTOS Kernel"
         depends on SDK_CMSIS

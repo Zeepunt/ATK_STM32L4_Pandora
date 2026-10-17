@@ -12,7 +12,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-#include "bsp_uart.h"
+#include "drv_uart.h"
 
 static SemaphoreHandle_t s_uart_mutex = NULL;
 
@@ -107,7 +107,7 @@ int _write(int file, char *ptr, int len)
     (void)file;
 
     priv_uart_mutex_lock();
-    bsp_uart_write((const uint8_t *)ptr, len);
+    drv_uart_write((const uint8_t *)ptr, len);
     priv_uart_mutex_unlock();
 
     return len;

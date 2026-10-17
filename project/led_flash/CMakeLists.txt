@@ -20,7 +20,6 @@ add_subdirectory(
     "${CMAKE_CURRENT_SOURCE_DIR}/../.."
     "${CMAKE_BINARY_DIR}/sdk"
 )
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/bsp")
 
 # 编译目标
 add_executable(${PROJECT_NAME}
@@ -47,8 +46,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     "cmsis-device-l4"
     "stm32l4xx-hal-driver"
     "FreeRTOS"
-    # other
-    "bsp"
+    "board"
 )
 
 if(CONFIG_SDK_SEGGER_RTT)

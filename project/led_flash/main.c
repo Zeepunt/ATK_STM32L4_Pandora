@@ -10,7 +10,8 @@
 #include "autoconf.h"
 
 #include "stm32l4xx.h"
-#include "bsp_uart.h"
+
+#include "drv_uart.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -150,6 +151,10 @@ int main(int argc, char *argv[])
     SystemClock_Config();
     SystemCoreClockUpdate();
 
+#ifndef CONFIG_SDK_SEGGER_RTT
+    drv_uart_init();
+#endif
+
     /**
      * 确保进入 Sleep 休眠模式后, 还能使用 RTT
      * 1. Sleep 模式下 DEBUG 保持使能, 允许调试器在低功耗模式中连接和查看内核状态
@@ -159,8 +164,6 @@ int main(int argc, char *argv[])
     HAL_DBGMCU_EnableDBGSleepMode();
     __HAL_RCC_SRAM1_CLK_SLEEP_ENABLE();
     __HAL_RCC_DMA1_CLK_ENABLE();
-
-    bsp_uart_init();
 
     ret = xTaskCreate(priv_app_task,
                       "app",

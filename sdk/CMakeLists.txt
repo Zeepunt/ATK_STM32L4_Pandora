@@ -16,6 +16,10 @@ if(CONFIG_SDK_STM32L4XX_HAL_DRIVER)
     add_subdirectory(stm32l4xx-hal-driver)
 endif()
 
+if(CONFIG_SDK_BOARD)
+    add_subdirectory(board)
+endif()
+
 if(CONFIG_SDK_FREERTOS)
     add_subdirectory(FreeRTOS)
 endif()

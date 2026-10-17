@@ -1,19 +1,15 @@
 /**
- * bsp_i2c.c
+ * drv_i2c.c
  *
  * SPDX-License-Identifier: Apache-2.0
  * SPDX-FileCopyrightText: 2026 Zeepunt
  */
 #include <stdbool.h>
 
-#include "stm32l4xx.h"
+#include "board_common.h"
+#include "drv_i2c.h"
 
-#include "FreeRTOS.h"
-
-#include "bsp_common.h"
-#include "bsp_i2c.h"
-
-static const char *TAG = "bsp_i2c";
+static const char *TAG = "drv_i2c";
 
 static I2C_HandleTypeDef s_i2c3_handler = {0};
 
@@ -47,7 +43,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 
         status = HAL_RCCEx_PeriphCLKConfig(&periph_clk_init);
         if (status != HAL_OK) {
-            BSP_LOGE(TAG, "HAL_RCCEx_PeriphCLKConfig failed: %d", status);
+            BOARD_LOGE(TAG, "HAL_RCCEx_PeriphCLKConfig failed: %d", status);
         }
 
         __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -93,7 +89,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
     }
 }
 
-int bsp_i2c_init(void)
+int drv_i2c_init(void)
 {
     HAL_StatusTypeDef status = HAL_OK;
 
@@ -118,18 +114,18 @@ int bsp_i2c_init(void)
 
     status = HAL_I2C_Init(&s_i2c3_handler);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Init failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2C_Init failed: %d", status);
         return -1;
     }
 
     status = HAL_I2CEx_ConfigAnalogFilter(&s_i2c3_handler, I2C_ANALOGFILTER_ENABLE);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2CEx_ConfigAnalogFilter failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2CEx_ConfigAnalogFilter failed: %d", status);
     }
 
     status = HAL_I2CEx_ConfigDigitalFilter(&s_i2c3_handler, 0);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2CEx_ConfigDigitalFilter failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2CEx_ConfigDigitalFilter failed: %d", status);
     }
 
     s_i2c3_init = true;
@@ -137,108 +133,72 @@ int bsp_i2c_init(void)
     return 0;
 }
 
-int bsp_i2c_write(uint16_t dev_addr, const uint8_t *buf, int len)
+int drv_i2c_reg_write_byte(uint16_t dev_addr, uint16_t reg_addr, const uint8_t *byte)
 {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (!s_i2c3_init) {
-        BSP_LOGE(TAG, "i2c not init");
-        return -1;
-    }
-
-    status = HAL_I2C_Master_Transmit(&s_i2c3_handler, dev_addr, (uint8_t *)buf, len, 100);
-    if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Master_Transmit_IT failed: %d", status);
-        return -1;
-    }
-
-    return 0;
-}
-
-int bsp_i2c_read(uint16_t dev_addr, uint8_t *buf, int len)
-{
-    HAL_StatusTypeDef status = HAL_OK;
-
-    if (!s_i2c3_init) {
-        BSP_LOGE(TAG, "i2c not init");
-        return -1;
-    }
-
-    status = HAL_I2C_Master_Receive(&s_i2c3_handler, dev_addr, buf, len, 100);
-    if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Master_Receive_IT failed: %d", status);
-        return -1;
-    }
-
-    return 0;
-}
-
-int bsp_i2c_reg_write_byte(uint16_t dev_addr, uint16_t reg_addr, const uint8_t *byte)
-{
-    HAL_StatusTypeDef status = HAL_OK;
-
-    if (!s_i2c3_init) {
-        BSP_LOGE(TAG, "i2c not init");
+        BOARD_LOGE(TAG, "i2c not init");
         return -1;
     }
 
     status = HAL_I2C_Mem_Write(&s_i2c3_handler, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, (uint8_t *)byte, 1, 100);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Mem_Write_IT failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2C_Mem_Write_IT failed: %d", status);
         return -1;
     }
 
     return 0;
 }
 
-int bsp_i2c_reg_read_byte(uint16_t dev_addr, uint16_t reg_addr, uint8_t *byte)
+int drv_i2c_reg_read_byte(uint16_t dev_addr, uint16_t reg_addr, uint8_t *byte)
 {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (!s_i2c3_init) {
-        BSP_LOGE(TAG, "i2c not init");
+        BOARD_LOGE(TAG, "i2c not init");
         return -1;
     }
 
     status = HAL_I2C_Mem_Read(&s_i2c3_handler, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, byte, 1, 100);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Mem_Read_IT failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2C_Mem_Read_IT failed: %d", status);
         return -1;
     }
 
     return 0;
 }
 
-int bsp_i2c_reg_write_buf(uint16_t dev_addr, uint16_t reg_addr, const uint8_t *buf, int len)
+int drv_i2c_reg_write_buf(uint16_t dev_addr, uint16_t reg_addr, const uint8_t *buf, int len)
 {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (!s_i2c3_init) {
-        BSP_LOGE(TAG, "i2c not init");
+        BOARD_LOGE(TAG, "i2c not init");
         return -1;
     }
 
     status = HAL_I2C_Mem_Write(&s_i2c3_handler, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, (uint8_t *)buf, len, 100);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Mem_Write_IT failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2C_Mem_Write_IT failed: %d", status);
         return -1;
     }
 
     return 0;
 }
 
-int bsp_i2c_reg_read_buf(uint16_t dev_addr, uint16_t reg_addr, uint8_t *buf, int len)
+int drv_i2c_reg_read_buf(uint16_t dev_addr, uint16_t reg_addr, uint8_t *buf, int len)
 {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (!s_i2c3_init) {
-        BSP_LOGE(TAG, "i2c not init");
+        BOARD_LOGE(TAG, "i2c not init");
         return -1;
     }
 
     status = HAL_I2C_Mem_Read(&s_i2c3_handler, dev_addr, reg_addr, I2C_MEMADD_SIZE_8BIT, buf, len, 100);
     if (status != HAL_OK) {
-        BSP_LOGE(TAG, "HAL_I2C_Mem_Read_IT failed: %d", status);
+        BOARD_LOGE(TAG, "HAL_I2C_Mem_Read_IT failed: %d", status);
         return -1;
     }
 

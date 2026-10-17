@@ -11,6 +11,8 @@
 
 #include "stm32l4xx.h"
 
+#include "drv_uart.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -18,7 +20,7 @@
 #include "SEGGER_RTT.h"
 #endif
 
-#include "drv_icm20608.h"
+#include "dev_icm20608.h"
 
 #include "app_x-cube-ai.h"
 
@@ -80,7 +82,7 @@ static void priv_app_task(void *args)
 
     LOG("Heap free: %d, min_ever: %d", xPortGetFreeHeapSize(), xPortGetMinimumEverFreeHeapSize());
 
-    drv_icm20608_init();
+    dev_icm20608_init();
 
     STM32CubeAI_Studio_AI_Init();
     while (1) {
@@ -102,6 +104,10 @@ int main(int argc, char *argv[])
 
     SystemClock_Config();
     SystemCoreClockUpdate();
+
+#ifndef CONFIG_SDK_SEGGER_RTT
+    drv_uart_init();
+#endif
 
     HAL_DBGMCU_EnableDBGSleepMode();
     __HAL_RCC_SRAM1_CLK_SLEEP_ENABLE();

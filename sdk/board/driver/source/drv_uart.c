@@ -1,13 +1,15 @@
 /**
- * bsp_uart.c
+ * drv_uart.c
  *
  * SPDX-License-Identifier: Apache-2.0
  * SPDX-FileCopyrightText: 2026 Zeepunt
  */
 #include <stdbool.h>
 
-#include "stm32l4xx.h"
-#include "bsp_uart.h"
+#include "board_common.h"
+#include "drv_uart.h"
+
+static const char *TAG = "drv_uart";
 
 static UART_HandleTypeDef s_uart1_handler = {0};
 
@@ -41,7 +43,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     }
 }
 
-int bsp_uart_init(void)
+int drv_uart_init(void)
 {
     HAL_StatusTypeDef status = HAL_OK;
 
@@ -55,6 +57,9 @@ int bsp_uart_init(void)
 
     status = HAL_UART_Init(&s_uart1_handler);
     if (status != HAL_OK) {
+#ifdef CONFIG_SDK_SEGGER_RTT
+        BOARD_LOGE(TAG, "HAL_UART_Init failed: %d", status);
+#endif
         return -1;
     }
 
@@ -67,12 +72,14 @@ int bsp_uart_init(void)
     return 0;
 }
 
-int bsp_uart_write(const char *buf, int len)
+int drv_uart_write(const char *buf, int len)
 {
     if (!s_uart1_init) {
+#ifdef CONFIG_SDK_SEGGER_RTT
+        BOARD_LOGE(TAG, "uart not init");
+#endif
         return -1;
     }
 
-    /* 这里的 Timeout 是依赖 HAL 库里面的 uwTick, uwTick 的更新是通过 HAL_IncTick() 来实现的 */
     return HAL_UART_Transmit(&s_uart1_handler, buf, len, HAL_MAX_DELAY);
 }

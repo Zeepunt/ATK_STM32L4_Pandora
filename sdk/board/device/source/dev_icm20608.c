@@ -1,13 +1,12 @@
 /**
- * drv_icm20608.c
+ * dev_icm20608.c
  *
  * SPDX-License-Identifier: Apache-2.0
  * SPDX-FileCopyrightText: 2026 Zeepunt
  */
-#include "bsp_i2c.h"
-
-#include "drv_common.h"
-#include "drv_icm20608.h"
+#include "board_common.h"
+#include "drv_i2c.h"
+#include "dev_icm20608.h"
 
 /**
  * AD0 接 GND  : 7-bit address = 0x68
@@ -46,21 +45,21 @@ typedef enum {
     REG_WHO_AM_I         = 0x75,
 } icm20608g_reg_t;
 
-static const char *TAG = "drv_icm20608";
+static const char *TAG = "dev_icm20608";
 
 static void priv_reg_write_byte(uint8_t reg, uint8_t byte)
 {
-    (void)bsp_i2c_reg_write_byte(ICM20608_ADDR << 1, reg, (const uint8_t *)&byte);
+    (void)drv_i2c_reg_write_byte(ICM20608_ADDR << 1, reg, (const uint8_t *)&byte);
 }
 
 static void priv_reg_read_byte(uint8_t reg, uint8_t *byte)
 {
-    (void)bsp_i2c_reg_read_byte(ICM20608_ADDR << 1, reg, byte);
+    (void)drv_i2c_reg_read_byte(ICM20608_ADDR << 1, reg, byte);
 }
 
 static void priv_reg_read_buf(uint8_t reg, uint8_t *buf, int len)
 {
-    (void)bsp_i2c_reg_read_buf(ICM20608_ADDR << 1, reg, buf, len);
+    (void)drv_i2c_reg_read_buf(ICM20608_ADDR << 1, reg, buf, len);
 }
 
 static void priv_gyro_fsr_set(uint8_t fsr)
@@ -210,7 +209,7 @@ static void priv_sample_rate_set(uint16_t hz)
     priv_reg_write_byte(REG_SMPLRT_DIV, div);
 }
 
-int drv_icm20608_gyroscope_get(int16_t *x, int16_t *y, int16_t *z)
+int dev_icm20608_gyroscope_get(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t buf[6] = {0};
 
@@ -223,7 +222,7 @@ int drv_icm20608_gyroscope_get(int16_t *x, int16_t *y, int16_t *z)
     return 0;
 }
 
-int drv_icm20608_accelerometer_get(int16_t *x, int16_t *y, int16_t *z)
+int dev_icm20608_accelerometer_get(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t buf[6] = {0};
 
@@ -236,13 +235,13 @@ int drv_icm20608_accelerometer_get(int16_t *x, int16_t *y, int16_t *z)
     return 0;
 }
 
-int drv_icm20608_init(void)
+int dev_icm20608_init(void)
 {
     int ret = 0;
 
     uint8_t version = 0;
 
-    ret = bsp_i2c_init();
+    ret = drv_i2c_init();
     if (ret != 0) {
         return -1;
     }
@@ -253,7 +252,7 @@ int drv_icm20608_init(void)
      *   The bit automatically clears to 0 once the reset is done.
      */
     priv_reg_write_byte(REG_PWR_MGMT_1, 0x80);
-    drv_delay_ms(100);
+    board_delay_ms_os(100);
 
     /**
      * bit[6] - SLEEP
@@ -265,7 +264,7 @@ int drv_icm20608_init(void)
      *   1: Auto selects the best available clock source – PLL if ready, else use the Internal oscillator
      */
     priv_reg_write_byte(REG_PWR_MGMT_1, 0x01);
-    drv_delay_ms(35);
+    board_delay_ms_os(35);
 
     /**
      * bit[5] - STBY_XA
@@ -299,15 +298,15 @@ int drv_icm20608_init(void)
      * 0xAF - ICM-20608-G
      */
     priv_reg_read_byte(REG_WHO_AM_I, &version);
-    DRV_LOGD(TAG, "version: 0x%02X", version);
+    BOARD_LOGD(TAG, "version: 0x%02X", version);
     if ((version != 0xAE) && (version != 0xAF)) {
-        DRV_LOGE(TAG, "unknown device ID");
+        BOARD_LOGE(TAG, "unknown device ID");
         return -1;
     }
 
     priv_gyro_fsr_set(3);
     priv_accel_fsr_set(0);
-    priv_sample_rate_set(50);
+    priv_sample_rate_set(26);
 
     return 0;
 }
